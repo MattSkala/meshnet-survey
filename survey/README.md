@@ -11,10 +11,7 @@
   - benefit from economies of scale (cheaper storage, bandwidth)
 - should strive for data portability, interoperability and alternatives to ad-based funding
 
-## Existing Solutions
-
-### Delft Research
-Paul Brussee. Survey of robust and resilient social media tools on Android. 2015. https://arxiv.org/pdf/1512.00071.pdf
+**Paul Brussee. Survey of robust and resilient social media tools on Android.** 2015. https://arxiv.org/pdf/1512.00071.pdf
 - Twimight. http://doi.acm.org/10.1145/2079360.2079367
   - Twitter client with a disaster mode
   - a central Twimight Disaster Server
@@ -57,6 +54,44 @@ Paul Brussee. Survey of robust and resilient social media tools on Android. 2015
   - DroidStealth: https://github.com/droidstealth/droid-stealth, launch using a phone dialer, app icon morphing
   - SelfCompile App
 
+**J. Pouwelse. Media without censorship (CensorFree) scenarios.** https://tools.ietf.org/html/draft-pouwelse-censorfree-scenarios-02
+- objective: standardize protocols for microblogging on smartphones with focus on security and censorship resistance
+- introduction:
+  - 2011 Arab spring - full internet shutdown
+  - forced Facebook login at Iranian airport
+- goal: Bluetooth transfer
+- 20sec scenario – ability to reach 20 million people in 20 seconds
+  - adversary: a simplistic attacker
+  - direct or NAT-based internet access
+  - bootstrap: a list of default bootstrap peers
+- kill-switch scenario
+  - adversary: advanced attacker – no internet access
+  - mobile ad hoc networks (MANET) – self-organized IP routing among wireless devices
+  - delay-tolerant networks (DTN) – use store-and-forward primitive
+- friend-to-friend scenario
+  - friend-to-friend networking to remove requirement for active networking and wifi sensing, 
+  - should deliver privacy-by-design
+  - adversary: powerful attacker – no internet access, can monitor wireless communication
+  - even possession of apps with encryption is dangerous => stealth app 
+- should offer capabilities to report spam, mechanisms for fact validation and reputation
+
+**Scalability & Paranoia in a Decentralized Social Network.** 2011. https://secushare.org/2011-FSW-Scalability-Paranoia
+- maximize privacy – hide data, relationships, communication
+- forward secrecy
+- VMs considered unsafe
+  - governments can enfore hosters to provide backdoors
+  - servers can manage routing and storage while users are offline
+- multicasting for scalability
+  - web, messaging – one-to-one communication
+  - social network – one-to-many, many-to-many
+  - XMPP – no encryption, inefficient base64 encoding
+  - IRC – application-level multicast tree, all users need to be knows to the entire network
+  - Usenet's NNTP
+- solutions
+  - we need a distributed application-level private multicast backbone
+  - GNUnet (based on Freenet, Tor, I2P), Maidsafe, A3, Tonika
+
+## Existing Solutions
 
 ### Decentralized Social Networks
 - [Mastodon](https://mastodon.social) – a federated social network resembling Twitter
@@ -74,12 +109,7 @@ Paul Brussee. Survey of robust and resilient social media tools on Android. 2015
 
 Alternative Internet: https://github.com/redecentralize/alternative-internet
 
-
-
 TODO:
-- J. Pouwelse. Media without censorship (CensorFree) scenarios. https://tools.ietf.org/html/draft-pouwelse-censorfree-scenarios-02
-- J. Pouwelse. The Shadow Internet: liberation from Surveillance, Censorship and Servers. https://tools.ietf.org/html/draft-pouwelse-perpass-shadow-internet-00
-- Scalability & Paranoia in a Decentralized Social Network. https://secushare.org/2011-FSW-Scalability-Paranoia
 - A gossip-based distributed social networking system. https://pure.tue.nl/ws/portalfiles/portal/3524712/Metis255949.pdf
 - Brewster Kahle. Locking the Web Open: A Call for a Decentralized Web. http://brewster.kahle.org/2015/08/11/locking-the-web-open-a-call-for-a-distributed-web-2/
 - Jonathan Warren. Bitmessage: A Peer‐to‐Peer Message Authentication and Delivery System. https://bitmessage.org/bitmessage.pdf
@@ -91,3 +121,5 @@ TODO:
 - Bridgefy SDK. https://www.bridgefy.me/
 - Spotify – Large Scale, Low Latency, P2P Music-on-Demand Streaming. http://dator8.info/pdf/csc/8.pdf
 - Peer-to-Peer Streaming Peer Protocol (PPSPP). https://tools.ietf.org/html/rfc7574
+- https://secushare.org/
+- https://gnunet.org/en/index.html
