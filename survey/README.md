@@ -180,6 +180,36 @@
 - introduces PeerFleet – a test framework for reproducible testing of nearby P2P apps
 - https://github.com/m3ftah/NearbyTest
 
+**Nearby Threats: Reversing, Analyzing, and Attacking Google’s ‘Nearby Connections’ on Android.** https://www.cs.ox.ac.uk/files/10367/ndss19-paper367.pdf
+- Nearby Connections API
+  - uses Bluetooth BR (basic rate)/EDR (extended data rate), LE, WiFi
+  - automatically uses the best features depending on the type of communication required (BT for short-range low-latency, WiFi for medium-range high-bandwidth)
+  - different connection strategies: point to point/star/cluster
+  - clients (discoverers) and servers (advertisers)
+  - a part of Google Play Services, proprietary
+  - *security through obscurity*  
+- paper contributions
+  - reverse engineering of Nearby Connections API
+  - connection manipulation and range extension attacks
+  - REARby – a toolkit for reverse engineering and attacking Nearby API (https://github.com/francozappa/REarby)
+- library analysis
+  - connection request
+    - always using Bluetooth
+    - discovering and advertising not encrypted
+    - Secure Simple Pairing (SSP) – a link key not authenticated and not persistent
+  - key exchange protocol
+    - custom based based on ECDH
+    - 4 packets    
+  - optional physical layer switch
+- attacks
+  - impersonation
+  - MITM on Bluetooth
+  - MITM on WiFi
+  - attacked-induced physical layer switch
+  - injection of default route via attacker AP
+  - DoS on all victim traffic
+  - radio state manipulation
+
 
 ## Existing Solutions
 
@@ -207,14 +237,21 @@ Alternative Internet: https://github.com/redecentralize/alternative-internet
 ## Reading List
 
 Ad Hoc Networks
+- Noise – A chat app for the end of the world. https://github.com/aarmea/noise
+  - Adapting epidemic routing for commodity phones in adversarial conditions
+- Epidemic Routing for Partially-Connected Ad Hoc Networks. http://issg.cs.duke.edu/epidemic/epidemic.pdf
+- Experimentation with MANETs of Smartphones. 2017. https://arxiv.org/pdf/1702.04249.pdf
 - A Multilayer Application for Multi-hop messaging on Android devices. http://anrg.usc.edu/ee579_2012/Group02/index.html
 - Content-centric Routing in Wi-Fi Direct Multi-group Networks. https://arxiv.org/pdf/1412.0880.pdf
 - A Mobile Ad Hoc Network Implementation for Android Smartphones. https://pdfs.semanticscholar.org/50d0/bc5e0e1f69db4c0999d4f79cad01edee434d.pdf
-- Nearby Threats: Reversing, Analyzing, and Attacking Google’s ‘Nearby Connections’ on Android. https://www.cs.ox.ac.uk/files/10367/ndss19-paper367.pdf
 - RightMesh. https://www.rightmesh.io/docs/RightMesh_TWP5.pdf
 - https://inthemesh.com/archive/whitepaper-connectivity-of-mesh-networks/
 - https://www.eecs.yorku.ca/course_archive/2006-07/F/6590/Misc/jin-final-thesis.pdf
 - Android Wireless Issues. http://thaliproject.org/androidWirelessIssues/
+- Profile-Based Ad Hoc Social Networking Using Wi-Fi Direct on the Top of Android. https://www.hindawi.com/journals/misy/2018/9469536/
+- Enabling always on service discovery: Wi-Fi Neighbor Awareness Networking (NAN. https://pdfs.semanticscholar.org/e481/45d691155d32db54c840f46b4b0ec28151d6.pdf
+- Cocoon: A lightweight opportunistic networking middleware for community-oriented smart mobile applications. 2016. https://ris.utwente.nl/ws/portalfiles/portal/6411441/cocoon-turkes.pdf
+- Creating Bluetooth sockets on Android without pairing. https://albertarmea.com/post/bt-auto-connect/
 
 Social Networks
 - When Social Networks Meet D2D Communications: A Survey. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6359220/
