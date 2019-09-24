@@ -39,9 +39,22 @@ This survey is structured as follows. In Section \ref{wirelesstech}, we first ex
 \section{Wireless Communication Technologies} \label{wirelesstech}
 
 \subsection{Bluetooth}
+Bluetooth is a wireless data exchange standard supported by the majority of mobile devices. It enables point to point and mutipoint communication. 
+To connect multiple devices, one device (a \textit{server}) first needs to make itself discoverable. On Android, the application can request device discoverability for a specified duration, but this action needs to be confirmed by the user in a dialog presented by the system. Then, other devices (\textit{clients}) can start scanning to find MAC addresses of nearby Bluetooth devices.
 
+It is possible to create a channel between two devices using a \textit{RFCOMM}\footnote{Radio frequency communication} protocol. First, the server starts listening on a socket. The client then uses the discovered MAC address to connect to the server. This method allows to open a secure channel either between two \textit{paired} devices, or even an insecure one without need of going through the pairing process.
 
 \subsection{Bluetooth Low Energy}
+BLE was originally introduced as a power-efficient way to connect with peripherals to exchange small amounts of data. It offers a similar range as Bluetooth, but a lower throughput.
+
+BLE devices are detected based on broadcasting advertising packets. There are two types of BLE devices: \textit{centrals} and \textit{peripherals}. The peripheral device starts by broadcasting an advertising packet limited to the size of 31 bytes. Central devices can then run a scanning process and filter advertising packets based on the MAC address, service UUID, or other parameters. It is important to note that the MAC received in advertising packets is not the physical MAC address if the devices are not paired, so it cannot be used to create the Bluetooth socket. \cite{ble:privacy} 
+
+Instead, BLE devices usually communicate using the \textit{GATT}\footnote{Generic Attribute Profile} server. Both central and peripheral can act as a server or client. The GATT server allows to store short pieces of data known as \textit{attributes} in form of \textit{characteristics} and \textit{descriptors}. Once the client establishes the connection with the server, it can read or write supported attributes.
+
+However, the advertising packet can also be abused to include the physical MAC address as part of the service UUID. Once the receiver extracts the physical MAC address from the packet, it can connect to the Bluetooth socket of the server. This has been up to date probably the most accessible way to connect two devices without user interaction. However, starting Android 8 it is no longer possible to obtain local MAC address programatically, so this solution would now require the user to copy the device MAC address from the system settings.
+
+From Android 10, there is also a possibility to form a \textit{L2CAP}\footnote{Logical link control and adaptation protocol} channel between Bluetooth LE devices.
+
 \subsection{WiFi Direct}
 \subsection{WiFi Aware}
 

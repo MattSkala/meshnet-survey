@@ -240,7 +240,7 @@
 - [Nearby Connections API](https://developers.google.com/nearby/)
   - a part of Google Play Services
   - introduced in 2015, [fully offline 2.0 in 2017](https://android-developers.googleblog.com/2017/07/announcing-nearby-connections-20-fully.html)
-  - Nearby engineer: https://stackoverflow.com/users/5623474/xlythe
+  - Nearby engineers: https://stackoverflow.com/users/5623474/xlythe, https://stackoverflow.com/users/7406756/varun-kapoor
 
 
 Alternative Internet: https://github.com/redecentralize/alternative-internet
