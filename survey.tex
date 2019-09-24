@@ -1,0 +1,67 @@
+\documentclass[conference,compsoc]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+
+\usepackage[hyphens]{url}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{breaklinks=true}
+
+
+\begin{document}
+ 
+\title{A Survey on Smartphone Ad Hoc Networks}
+
+\author{\IEEEauthorblockN{Matouš Skála}
+\IEEEauthorblockA{Delft University of Technology\\
+Email: M.Skala@student.tudelft.nl}}
+
+\maketitle
+
+\begin{abstract}
+Over the past few years, smartphones have become powerful devices that come equipped with numerous network connectivity modules. In addition to Bluetooth BR/EDR and Bluetooth Low Energy, most recent devices also come with support for Wi-Fi Direct and Wi-Fi Aware standards to facilitate the interconnection with nearby devices over longer distances and with higher bandwidth. 
+
+In this survey, we discuss the current implementation of various connectivity APIs in Android OS and explore possibilities of deploying a large-scale smartphone ad hoc network. Additionally, we design a proof of concept Android application to demonstrate the feasibility of mesh networking within the constraints imposed by Android OS.
+
+\end{abstract}
+
+\begin{IEEEkeywords}mesh networks, mobile ad hoc networks\end{IEEEkeywords}
+
+\section{Introduction}
+
+The increasing popularity of smartphones and novel wireless networking technologies opens up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is either overloaded or censored \cite{forbes:hk}. 
+
+Starting from Android 4.0, \textit{Wi-Fi Direct} \cite{android:wifip2p}, also referred to as Wi-Fi peer to peer, is directly supported by the system, allowing device to device Wi-Fi communication without an additional \textit{access point (AP)}. From Android 8.0, the \textit{Wi-Fi Aware} \cite{android:wifiaware} standard, also known as \textit{Neighbor Awareness Networking (NAN)}, has been supported, allowing to automatically form clusters of nearby devices.
+
+Wi-Fi generally offers a higher range of coverage and bandwidth than \textit{Bluetooth}, so it might be more suitable for data-intensive applications such as photo or video sharing. On the other hand, Bluetooth is supported on a wider variety of devices and especially \textit{Bluetooth Low Energy (BLE)} \cite{android:ble} can result in significantly lower battery consumption, thus it is more suitable for transferring small amounts of data.
+
+This survey is structured as follows. In Section \ref{wirelesstech}, we first explore features of all previously mentioned wireless communication protocols. In Section \ref{android}, we discuss their implementation and possible limitations within Android OS. In Section \ref{applications}, we explore different Android applications taking advantage of mesh networking for censorship resilient messaging. Finally, in Section \ref{poc} we present our proof of concept for deploying an ad hoc network with multi-hop routing on Android. Section \ref{conclusion} concludes this work.
+
+\section{Wireless Communication Technologies} \label{wirelesstech}
+
+\subsection{Bluetooth}
+
+
+\subsection{Bluetooth Low Energy}
+\subsection{WiFi Direct}
+\subsection{WiFi Aware}
+
+\section{Implementation in Android OS} \label{android}
+\subsection{BluetoothManager}
+\subsection{WifiP2pManager}
+\subsection{WifiAwareManager}
+\subsection{Nearby Connections API}
+
+\section{Applications} \label{applications}
+\subsection{Briar}
+\subsection{Bridgefy}
+\subsection{FireChat}
+\subsection{The Serval Mesh}
+\subsection{B.A.T.M.A.N.}
+
+\section{Proof of Concept} \label{poc}
+\section{Conclusion} \label{conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,mybibfile}
+
+\end{document}

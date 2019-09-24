@@ -232,11 +232,23 @@
 - [Bridgefy](https://www.bridgefy.me/)
 - [Signal Offline Messenger](https://play.google.com/store/apps/details?id=com.raxis.signalapp)
 
+### Android Connectivity
+- [WiFi Direct](https://developer.android.com/training/connect-devices-wirelessly/wifi-direct) – from Android 4
+- [WiFi Aware](https://developer.android.com/guide/topics/connectivity/wifi-aware) - from Android 8
+- [Bluetooth](https://developer.android.com/guide/topics/connectivity/bluetooth)
+- [Bluetooth Low Energy](https://developer.android.com/guide/topics/connectivity/bluetooth-le) – from Android 4.3
+- [Nearby Connections API](https://developers.google.com/nearby/)
+  - a part of Google Play Services
+  - introduced in 2015, [fully offline 2.0 in 2017](https://android-developers.googleblog.com/2017/07/announcing-nearby-connections-20-fully.html)
+  - Nearby engineer: https://stackoverflow.com/users/5623474/xlythe
+
+
 Alternative Internet: https://github.com/redecentralize/alternative-internet
 
 ## Reading List
 
 Ad Hoc Networks
+- Samsung. A mesh network for mobile devices using Bluetooth low energy https://www.researchgate.net/publication/281393663_A_Mesh_Network_for_Mobile_Devices_using_Bluetooth_Low_Energy
 - Noise – A chat app for the end of the world. https://github.com/aarmea/noise
   - Adapting epidemic routing for commodity phones in adversarial conditions
 - Epidemic Routing for Partially-Connected Ad Hoc Networks. http://issg.cs.duke.edu/epidemic/epidemic.pdf
@@ -248,10 +260,12 @@ Ad Hoc Networks
 - https://inthemesh.com/archive/whitepaper-connectivity-of-mesh-networks/
 - https://www.eecs.yorku.ca/course_archive/2006-07/F/6590/Misc/jin-final-thesis.pdf
 - Android Wireless Issues. http://thaliproject.org/androidWirelessIssues/
+- Android BLE Issues. https://github.com/iDevicesInc/SweetBlue/wiki/Android-BLE-Issues
 - Profile-Based Ad Hoc Social Networking Using Wi-Fi Direct on the Top of Android. https://www.hindawi.com/journals/misy/2018/9469536/
 - Enabling always on service discovery: Wi-Fi Neighbor Awareness Networking (NAN. https://pdfs.semanticscholar.org/e481/45d691155d32db54c840f46b4b0ec28151d6.pdf
 - Cocoon: A lightweight opportunistic networking middleware for community-oriented smart mobile applications. 2016. https://ris.utwente.nl/ws/portalfiles/portal/6411441/cocoon-turkes.pdf
 - Creating Bluetooth sockets on Android without pairing. https://albertarmea.com/post/bt-auto-connect/
+- Trustchain: Native Android implementation. https://github.com/Tribler/tribler/issues/3105
 
 Social Networks
 - When Social Networks Meet D2D Communications: A Survey. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6359220/
