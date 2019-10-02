@@ -211,6 +211,22 @@
   - radio state manipulation
 
 
+Cocoon: A lightweight opportunistic networking middleware for community-oriented smart mobile applications. 2016. https://ris.utwente.nl/ws/portalfiles/portal/6411441/cocoon-turkes.pdf
+- opportunistic networks (oppnets)
+  - enable information sharing through occasional P2P connections
+  - delay-tolerant communictions under highly-dynamic routing conditions
+- two different routing models
+  - Opportunistic Beacon Networking (OBN)
+    - messages shared over advertisement beacons (encoded in SSID in WiFI, UUID in BLE)
+    - without establishing connections
+    - highly-opportunistic limited-throughput data dissemination
+  - Opportunistic Association Networking (OAN)
+    - beacons exploited for the establishment of connection-based networks
+    - small-scale high-throughput group communications
+  - literature review
+    - 
+
+
 ## Existing Solutions
 
 ### Decentralized Social Networks
@@ -263,7 +279,6 @@ Ad Hoc Networks
 - Android BLE Issues. https://github.com/iDevicesInc/SweetBlue/wiki/Android-BLE-Issues
 - Profile-Based Ad Hoc Social Networking Using Wi-Fi Direct on the Top of Android. https://www.hindawi.com/journals/misy/2018/9469536/
 - Enabling always on service discovery: Wi-Fi Neighbor Awareness Networking (NAN. https://pdfs.semanticscholar.org/e481/45d691155d32db54c840f46b4b0ec28151d6.pdf
-- Cocoon: A lightweight opportunistic networking middleware for community-oriented smart mobile applications. 2016. https://ris.utwente.nl/ws/portalfiles/portal/6411441/cocoon-turkes.pdf
 - Creating Bluetooth sockets on Android without pairing. https://albertarmea.com/post/bt-auto-connect/
 - Trustchain: Native Android implementation. https://github.com/Tribler/tribler/issues/3105
 
