@@ -16,3 +16,4 @@ Name | Technologies
 [Nearby Connections API](https://developers.google.com/nearby/connections/overview) | Bluetooth, BLE, WiFi Direct, WiFi Aware
 [Bridgefy](https://bridgefy.me/) | BLE, Bluetooth?
 [HypeLabs](https://hypelabs.io/) |
+[p2pkit](http://p2pkit.io/)

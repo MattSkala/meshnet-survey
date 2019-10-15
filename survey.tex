@@ -39,15 +39,21 @@ This survey is structured as follows. In Section \ref{wirelesstech}, we first ex
 \section{Wireless Communication Technologies} \label{wirelesstech}
 
 \subsection{Bluetooth}
-Bluetooth is a wireless data exchange standard supported by the majority of mobile devices. It enables point to point and mutipoint communication. 
-To connect multiple devices, one device (a \textit{server}) first needs to make itself discoverable. On Android, the application can request device discoverability for a specified duration, but this action needs to be confirmed by the user in a dialog presented by the system. Then, other devices (\textit{clients}) can start scanning to find MAC addresses of nearby Bluetooth devices.
+Bluetooth is a wireless data exchange standard developed by Bluetooth SIG\footnote{Special Interest Group} and supported by the majority of mobile devices. To connect two devices, one device
+ (a \textit{server}) first needs to make itself discoverable. On Android, the application can request device discoverability for a specified duration, but this action needs to be confirmed by the user in a dialog presented by the system. Then, other devices (\textit{clients}) can start scanning to find MAC addresses of nearby Bluetooth devices.
 
-It is possible to create a channel between two devices using a \textit{RFCOMM}\footnote{Radio frequency communication} protocol. First, the server starts listening on a socket. The client then uses the discovered MAC address to connect to the server. This method allows to open a secure channel either between two \textit{paired} devices, or even an insecure one without need of going through the pairing process.
+It is possible to establish a channel between two devices using a \textit{RFCOMM}\footnote{Radio frequency communication} protocol. First, the server opens a server socket. Clients can then use the discovered MAC address to initiate the connection with the server. This method allows to open a secure channel either between two \textit{paired} devices, or even an insecure one without need of going through the pairing process.
+
+When two devices are linked, one of them takes the role of a \textit{master}, the other one is a \textit{slave}. There can be up to 7 slaves connected to a single master and such a network is called a \textit{piconet}. A device can only be a master of a single piconet. However, since Bluetooth 4.1, it is possible for a slave to connect to multiple masters, or for a master to also act as a slave in another piconet. A network consisting of multiple piconects is referred to as a \textit{scatternet}. \cite{bluetooth51spec}
 
 \subsection{Bluetooth Low Energy}
-BLE was originally introduced as a power-efficient way to connect with peripherals to exchange small amounts of data. It offers a similar range as Bluetooth, but a lower throughput.
+BLE was first introduced in the Bluetooth 4.0 specification as a power-efficient way to connect with peripherals to exchange small amounts of data. It offers a similar range as Bluetooth with a lower throughput, but a significantly lower power consumption in an idle state, making it suitable for sending short bursts of data.
 
-BLE devices are detected based on broadcasting advertising packets. There are two types of BLE devices: \textit{centrals} and \textit{peripherals}. The peripheral device starts by broadcasting an advertising packet limited to the size of 31 bytes. Central devices can then run a scanning process and filter advertising packets based on the MAC address, service UUID, or other parameters. It is important to note that the MAC received in advertising packets is not the physical MAC address if the devices are not paired, so it cannot be used to create the Bluetooth socket. \cite{ble:privacy} 
+Like Bluetooth, BLE operates in the 2.4 GHz ISM\footnote{industrial, scientific and medical} radio band. There are 40 physical channels, 3 of them are used for advertising and 37 are used as data channels. Devices that transmit unidirectional broadcasts on advertising channels are called \textit{advertisers}. Devices that receive data on advertising channels are called \textit{scanners}. Advertisement transmission occurs in advertising events. At the beginning of each event, the advertiser sends an advertising packet. Upon detection of the advertisement, the scanner may send a scan request which is then followed by a scan response from the advertiser. The advertisement packet can be sent in all 3 advertising channels during the same advertising event. Both advertisement and scan response size are limited by 31 bytes, but can be extended to 255 bytes by extended advertisements in Bluetooth 5.0. \cite{bluetooth51spec}
+
+If the advertising event is marked as connectable, the advertiser may receive connection requests from \textit{initiators}. 
+
+BLE devices can act in two roles: \textit{centrals} and \textit{peripherals}. The peripheral device starts by broadcasting an advertising packet limited to the size of 31 bytes. Central devices can then run a scanning process and filter advertising packets based on the MAC address, service UUID, or other parameters. It is important to note that the MAC received in advertising packets is not the physical MAC address if the devices are not paired, so it cannot be used to create the Bluetooth socket. \cite{ble:privacy} 
 
 Instead, BLE devices usually communicate using the \textit{GATT}\footnote{Generic Attribute Profile} server. Both central and peripheral can act as a server or client. The GATT server allows to store short pieces of data known as \textit{attributes} in form of \textit{characteristics} and \textit{descriptors}. Once the client establishes the connection with the server, it can read or write supported attributes.
 
@@ -57,6 +63,24 @@ From Android 10, there is also a possibility to form a \textit{L2CAP}\footnote{L
 
 \subsection{WiFi Direct}
 \subsection{WiFi Aware}
+
+
+\begin{figure}  
+  \centering
+  \begin{tabular}{ | l | l | l | l | l | }
+    \hline
+    Technology & Android & Throughput & Range \\
+    \hline
+    Bluetooth & 2.0+ & 24 Mbps & $\sim$10 m \\
+    BLE & 4.3+ & 0.3 Mbps & $\sim$100 m \\
+    BLE GATT & 5.0+ & 0.3 Mbps & $\sim$100 m \\
+    BLE L2CAP & 10.0+ & 0.3 Mbps & $\sim$100 m \\
+    WiFi Direct & 4.0+ & 250 Mbps & $\sim$200 m \\
+    WiFi Aware & 8.0+ & 250 Mbps & $\sim$200 m \\
+    \hline
+  \end{tabular}
+  \caption{The comparison of wireless communication technologies w.r.t. supported Android platform versions, a theoretical throughput, and range}
+\end{figure}
 
 \section{Implementation in Android OS} \label{android}
 \subsection{BluetoothManager}

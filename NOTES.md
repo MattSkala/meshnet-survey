@@ -226,6 +226,60 @@ Cocoon: A lightweight opportunistic networking middleware for community-oriented
   - literature review
     - 
 
+Peer-to-peer Communication in Android Devices: Web
+Access over an Ad Hoc Network. 2017. https://fenix.tecnico.ulisboa.pt/downloadFile/1407770020546019/dissertation.pdf
+- wireless communication technologies
+  - WiFi Direct
+    - group owner (GO), group member (GM)
+    - star topology
+  - Bluetooth
+    - 7 slaves
+    - piconet, scatternet
+    - relaying by slaves in multple piconets
+    - 1W, less than 30 mA
+    - 0.7-2.1 Mbps
+  - BLE
+    – number of slaves implementation dependent
+    - 0.01-0.5W, less than 15 mA
+    - 0.27 Mbps
+- Android
+  - Bluetooth
+    - the role of a device cannot be altered in user space? master/slave does not correspond to server/client?
+  - WiFi Direct
+    - legacy and normal clients
+    - GO assigned IP 192.168.49.1/24, GM IP chosen randomly from 192.168.49.2/24 to 192.168.49.254/24
+    - workaround: GO also acts as a legacy client in another group
+
+
+Bluetooth Low Energy Mesh Networks: A Survey. 2017.
+- Bluetooth 4.1 – a slave can connect to multiple masters, a master can also be a slave
+- BLE mesh network standardization
+  - Bluetooth SIG: Bluetooth Smart Mesh
+  - [IETF: IPv6 over BLE Mesh Networks](https://tools.ietf.org/html/rfc7668)
+- academic solutions
+  - flooding-based – broadcasts using advertisement packets
+  - routing-based – routing protocol for packet forwarding over data channels
+    - static routing
+    - dynamic routing
+- discussion
+  - flooding vs routing
+    - flooding - simplicity, no connections required, inefficient
+  - routing approach
+    - tree/DAG proactive-routing
+    - on-demand routing
+  - reliability – advertising vs data channels
+    - flooding using advertising channels not able to exploit frequency hopping (interference issues)
+    - data channels provide link layer reliability (acknowledgements and retries)
+  - large data unit support
+    - segmentation and reassembly (SAR) provided by L2CAP
+    - not possible to transmit large messages by advertising
+  - open issues
+    - security – advertising channels not encrypted
+    - privacy vs routing
+      - BLE addresses changed frequently => routing tables need to be updated
+    - multicast
+    - interoperability
+
 
 ## Existing Solutions
 
@@ -258,10 +312,19 @@ Cocoon: A lightweight opportunistic networking middleware for community-oriented
   - introduced in 2015, [fully offline 2.0 in 2017](https://android-developers.googleblog.com/2017/07/announcing-nearby-connections-20-fully.html)
   - Nearby engineers: https://stackoverflow.com/users/5623474/xlythe, https://stackoverflow.com/users/7406756/varun-kapoor
 
+### Routing Algorithms
+- table-driven (proactive)
+  - Destination Sequencted Distance Vector Routing Protocol (DSDV)
+  - Wireless Routing Protocol
+  - Zone-based Hierarchical Link State Routing Protocol
+- on-demand (reactive)
+  - Ad hoc On-Demand Distance Vector Routing (AODV)
+  - Dynamic Source Routing Protocol (DSR)
+  - Better Approach to MANET (BATMAN)
 
 Alternative Internet: https://github.com/redecentralize/alternative-internet
 
-## Reading List
+## TODO Reading List
 
 Ad Hoc Networks
 - Samsung. A mesh network for mobile devices using Bluetooth low energy https://www.researchgate.net/publication/281393663_A_Mesh_Network_for_Mobile_Devices_using_Bluetooth_Low_Energy
