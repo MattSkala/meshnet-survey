@@ -224,7 +224,7 @@ Cocoon: A lightweight opportunistic networking middleware for community-oriented
     - beacons exploited for the establishment of connection-based networks
     - small-scale high-throughput group communications
   - literature review
-    - 
+  
 
 Peer-to-peer Communication in Android Devices: Web
 Access over an Ad Hoc Network. 2017. https://fenix.tecnico.ulisboa.pt/downloadFile/1407770020546019/dissertation.pdf
@@ -280,6 +280,77 @@ Bluetooth Low Energy Mesh Networks: A Survey. 2017.
     - multicast
     - interoperability
 
+The Hype SDK: A Technical Overview. https://hypelabs.io/documents/Hype-SDK.pdf
+- issue with connectivity – Google Project Loon, internet.org
+- startups: OpenGarden, Ueppa, Bridgefiy
+- introduce mesh network
+  - differs from standard networks in topology  
+  - not relying on infrastructure => devices capable of relying data and acting as routers
+  - when two devices communicate, proxies forward content for them (mult-hop)
+  - no centralized entity - no single point of failure
+  - not meant to replace existing networks - when combined, they form hybrid networks (last mile connectivity)
+  - research dates back to 50s, SOSUS, Distributed Sensor Network
+- Hype SDK
+  - support for Bluetooth, WiFi and Internet
+  - transport multiplexing
+- mesh networking
+  - proactive
+    – keep a constant discovery process, nodes are informed of topological changes
+    - quickly heals from link breakage
+    - called table-driven    
+    - need for loop prevention
+    - periodic flooding incurs significant overhead
+    - proactive area = the set of participants that the node is proactively aware of
+    - does not scale well with number of nodes: number of packets exponential to network size, network congestion
+  - reactive
+    - establishes routes on demand, not as much overhead
+    - slower connetion establishment, as links are not known a priori
+    - in order to establish a route, a node broadcasts path request that is flooded on the network until the destionat is found or request times out
+    - when a path is found, nodes cooperate to return a route response to the requester and update routing tables
+  - hybrid
+    - switch between two approaches on a per-packet basis
+  - multi-transport, bridging
+- network segregation
+  - devices running different apps can still cooperate on the same network
+  - unique app identifiers
+  - during mismatch, packets do not go up the protocol stack
+- network discovery
+  - identification: app identifier – to segregate the network, device identifier, user identifier – optional, managed by the app
+  - instance is found - only user id returned (31 bits)
+  - manually resolve an instance (perform handshake)
+- multi-transport
+  - able to maintain multiple communication technologies simultaneously
+  - WiFi Infrastructure, WiFi Direct, Bluetooth Classic, BLE
+  - developed can choose used transports (interoperability vs power-efficiency)
+- internet reachability
+  - NAT traversal can take time
+  - Hype may relay traffic on a server
+  - reactive discovery
+- communication methods
+  - unicast, multicast, broadcast
+- network offloading
+  - probabilistic algorithm to decide which transport to use on a per-packet basis
+  - scores links based on performance indicators – several factors taken into consideration: battery status, link stability, packet loss, congestion
+  - load distribution - as link becomes congested, it becomes less probable, other routes are prioritized
+- battery efficiency
+  - policies: maximize throughput x battery savings
+- progress tracking
+  - optional acknowledgements on a packet basis
+- security
+  - Diffie-Hellman
+- authentication
+  - OAuth auth using HypeLabs server
+- use cases
+  - IoT
+  - social networking, messaging, dating
+  - disaster recovery
+  - media sharing
+  - connecting events
+  - multiplayer gaming
+- Hype Open Protocol
+  - incentivize cooperation
+  - public launch in 2021
+
 
 ## Existing Solutions
 
@@ -301,6 +372,7 @@ Bluetooth Low Energy Mesh Networks: A Survey. 2017.
 - [HypeLabs](https://hypelabs.io/)
 - [Bridgefy](https://www.bridgefy.me/)
 - [Signal Offline Messenger](https://play.google.com/store/apps/details?id=com.raxis.signalapp)
+- [p2pkit](http://p2pkit.io/developer/get-started/android/#discovery)
 
 ### Android Connectivity
 - [WiFi Direct](https://developer.android.com/training/connect-devices-wirelessly/wifi-direct) – from Android 4

@@ -1,6 +1,8 @@
 \documentclass[conference,compsoc]{IEEEtran}
 \usepackage[utf8]{inputenc}
 \usepackage{cite}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
 
 \usepackage[hyphens]{url}
 \usepackage[hidelinks]{hyperref}
@@ -61,9 +63,45 @@ However, the advertising packet can also be abused to include the physical MAC a
 
 From Android 10, there is also a possibility to form a \textit{L2CAP}\footnote{Logical link control and adaptation protocol} channel between Bluetooth LE devices.
 
-\subsection{WiFi Direct}
-\subsection{WiFi Aware}
+\subsection{Wi-Fi Direct}
 
+There have been many attempts to enable direct communication between IEEE 802.11 radio devices. The 802.11 standard defines two operating modes. Next to the traditional \textit{infrastructure} mode, there is an \textit{ad-hoc} mode which allows device-to-device communication. However, the ad-hoc mode is not supported by Android OS.
+
+\textit{Wi-Fi Direct} (also known as Wi-Fi Peer-to-Peer) \cite{wifip2p} is a IEEE 802.11 based protocol released by Wi-FI Alliance in 2009 and supported from Android 4.0. With Wi-Fi direct, devices are organized in groups, where one device is the Group Owner (GO) and the rest are Group Members (GM). The roles are not predefined, but are negotiated during the group formation process. Groups are able to support Legacy Clients (LC), which means that even devices without Wi-Fi Direct support can join as group members.
+
+\subsubsection{Multi-group communication}
+
+The standard only defines intra-group communication, but it does not restrict a Group Member from participating in multiple groups simultaneously. Moreover, a device can theoretically connect both to Wi-Fi Direct and an infrastructure network by using multiple virtual MAC entities. However, these functionalities are not defined by the standard and thus depend on the implementation.
+%\subsubsection{Limitations of Android} 
+In Android, the GO always has the same hardcoded IP address (192.168.49.1), while GM are assigned a random address from the same subnet (192.168.49.2-254). As a result, the scenario where the device would act in multiple groups at the same time cannot be directly implemented. 
+
+There are several workarounds proposed in \cite{FunaiTH16}. The first solution is to use \textit{time sharing} to allow a device to act as a gateway between multiple groups. It requires a device to periodically disconnect and reconnect to different groups and effectively act as a relay passing messages between multiple groups.
+Another solution takes advantage of \textit{simultaneous connections} using Wi-Fi Direct and the traditional Wi-Fi. The GO advertises its group using a unique Service Set ID (SSID) that can be used by other clients not supporting the framework to join the group. Experiments have shown that it is possible to create a LC/GM gateway node when communicating using multicast UDP datagram sockets. Due to routing-related issues, this solution does not work with traditional datagram or stream sockets. The authors also propose a more efficient \textit{hybrid} protocol that uses multicast sockets as a control channel that triggers gateway configuration change if needed. However, all solutions rely on undocumented behaviors, which means their reliability can vary across devices or Android OS versions.
+
+\subsection{Wi-Fi Aware}
+
+\textit{Wi-Fi Aware}, also known as \textit{Neighbor Awareness Networking} (NAN) is a recent networking standard introduced by Wi-Fi Alliance. \cite{wifiaware} It works by forming clusters with nearby devices. The discovery process starts when one device (a \textit{publisher}) publishes a discoverable service. Other devices (\textit{subscribers}) who subscribe to the same service will receive a notification once a matching publisher is discovered. After the subscriber discovers a publisher, it can either send a short message or establish a network connection with the device. A device can be both a subscriber and a publisher simultaneously.
+
+
+\subsubsection{Ranging peers}
+
+Devices that are equipped with \textit{Wi-Fi Round Trip Time} (RTT) can also directly measure distance to peers. This information can further be used for location-aware service discovery. Specifically, the discovery process can be restricted to only include services within a particular range specified by a minimum and maximum distance in meters.
+
+\subsubsection{Wi-Fi Aware on Android}
+
+Wi-Fi Aware is supported by Android OS since the version 8.0. However, it is not required by Google for devices to support this standard. During our testing, it was available only on a small subset of potentially capable devices. For example, Google Pixel and Samsung Galaxy S9 do not support Wi-Fi Aware, while they officially support Android later than 8.0. In fact, Google Pixel 2 XL and 4 XL were the only supported devices we were able to test. This makes it impractical to use it as the only communication protocol even for new apps.
+
+To our best knowledge, there have been no attempts to utilize Wi-Fi Aware as a communication layer for mesh networks so far. It has a higher throughput and range then Bluetooth. It also should not suffer from the issues related to Wi-Fi Direct described previously. However, reluctant support from device manufacturers prevents it from being useful for a wide-scale deployment in the near future.
+
+\subsection{Nearby Connections API}
+
+All previously mentioned technologies can be accessed on Android directly using their corresponding APIs. However, in some cases, the behavior depends on the version of Android OS or even device-specific implementation. Moreover, every API is slightly different, and taking advantage of multiple technologies simultaneously takes considerable effort. For that reason, Google introduced Nearby Connections API in 2015 and its fully-offline version 2.0 in 2018. \cite{nearby2} The API aims to large extent simplify development of Android applications relying on peer to peer communication. It is able to automatically switch between Bluetooth, BLE, Wi-Fi, Wi-Fi Direct, and Wi-Fi Aware depending on the application needs and device capabilities.
+
+It supports multiple strategies for different network topologies, specifically cluster, star, and point to point. The cluster topology is the most general one allowing m-to-n connections. However, in the current version, the cluster stratgy results in lower bandwidth connections as it uses only Bluetooth connectivity.
+
+The library is closed-sourced, but it has been previously reverse-engineered and analyzed by security researchers. Several vulnerabilities have been discovered and disclosed to Google, including impersonation, man-in-the-middle attacks, attacker-induced physical layer switch, DoS, or radio state manipulation. \cite{nearbytr}
+
+The library is distributed as part of Google Play Services, which means it is only available on devices that are certified by Google. This also prevents it from being used in countries where access to Google is restricted. This is not compatible with our idea of censorship resilient communication.
 
 \begin{figure}  
   \centering
@@ -82,23 +120,91 @@ From Android 10, there is also a possibility to form a \textit{L2CAP}\footnote{L
   \caption{The comparison of wireless communication technologies w.r.t. supported Android platform versions, a theoretical throughput, and range}
 \end{figure}
 
-\section{Implementation in Android OS} \label{android}
-\subsection{BluetoothManager}
-\subsection{WifiP2pManager}
-\subsection{WifiAwareManager}
-\subsection{Nearby Connections API}
+\section{Routing Protocols}
+
+%// motivation for routing in manets, issues, topology changes
+
+There are several approaches for disseminating content in ad hoc networks. In general, we can divide protocols into two main categories: flooding-based and routing-based.
+
+Flooding-based solutions do not perform routing, instead packets are broadcasted by nodes and spread across the whole network. In naive flooding, \textit{broadcast storms} can happen in case nodes broadcast the same packet repeatedly. Therefore, nodes should implement loop prevention by storing a set of recently received messages and only deliver messages that have not been received before. \cite{flooding} While conceptually simple, flooding incurs high overhead in terms of transmitted messages, especially when only point-to-point communication between two devices is desired.
+
+Routing-based protocols can be classified into tree types: \textit{proactive} (table-driven), \textit{reactive} (on-demand), and \textit{hybrid}.
+
+\subsection{Proactive}
+
+In proactive routing protocols, each node maintains routes to every other node in the network. The routes information is usually stored in routing tables and it is periodically updated as the topology changes. \cite{routing} Examples of proactive routing protocols are Destination Sequence Distance Vector (DSDV) \cite{dsdv} or Optimized Link State Routing (OLSR) \cite{olsr}.
+
+\subsection{Reactive}
+
+In reactive routing, routes are established on demand. When a node needs to send a message to the destination and the route is not known, the \textit{route discovery} mechanism is invoked. This is usually done by broadcasting a route discovery packet through the network. Once the path between the source and the destination is known, data can be transmitted using the selected route. Due to dynamic nature of SPANs, a \textit{route maintenance} mechanism is required to handle route breakage. 
+Some well-known reactive routing protocols are Ad Hoc On-Demand Distance Vector (AODV) \cite{aodv} or Dynamic Source Routing (DSR) \cite{dsr}.
+
+%Compared to proactive approach, this is more efficient in larger networks, as the whole topology does not have to be synchronized. However, it incurrs a time delay before the first message to the destionation can be sent.
+
+%Hybrid protocols allow to combine both approaches. \cite{routing}
+
+
+%\subsection{Hybrid}
+
+%\section{Implementation in Android OS} \label{android}
+%\subsection{BluetoothManager}
+%\subsection{WifiP2pManager}
+%\subsection{WifiAwareManager}
+%\subsection{Nearby Connections API}
+
 
 \section{Applications} \label{applications}
+
+In this section, we list the state-of-the art applications taking advantage of smartphone ad hoc networks for resilient messaging. We describe their functionality and analyze chosen communication technologies. Finally, we assess their limitations and suggest improvements.
+
 \subsection{Briar}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.2\textwidth]{briar1}
+  \includegraphics[width=0.2\textwidth]{briar2}
+  \caption{The menu and conversation detail in Briar \cite{briar_gplay}}
+\end{figure}
+
+Briar \cite{briar_gplay} is an open-source project that started to support freedom of expression and right to privacy. It enables peer-to-peer encrypted messaging and forums. It is presented as a tool for activists, journalists, and anyone who needs a safe way to communicate.
+
+Before the communication starts, users have to meet in person and scan QR codes from each other's screen. The devices exchange public keys and agree on a shared key using \textit{Bramble QR Code Protocol (BQP)} \cite{briar_bqp}. 
+%The protocol requires both devices to have Bluetooth enabled and be discoverable, or be connected to the same WiFi network. 
+This provides strong identities secure against man-in-the-middle attacks.
+
+The device only accepts connections from devices in contacts. However, the user can initiate an introduction between two of her contacts. If both contacts accept the introduction request, then they are able to establish connections without meeting in person.
+
+The communication is built on top \textit{Bramble Transport Protocol (BTP)} and \textit{Bramble Synchronization Protocol (BSP)}, transport and application layer protocols suitable for \textit{delay-tolerant networks}. \cite{briar_stack} It does not rely on any central server, but instead allows to synchronize messages using Bluetooth or Wi-Fi. If the Internet is available, it can also connect via the Tor network.
+
+However, the application does not take advantage of mesh networking. It can only communicate with devices it is directly connected to.
+
 \subsection{Bridgefy}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.2\textwidth]{bridgefy1}
+  \includegraphics[width=0.2\textwidth]{bridgefy2}
+  \caption{The list of nearby contacts and broadcast in Bridgefy \cite{bridgefy_gplay}}
+\end{figure}
+
+Bridgefy is an offline messaging app based on Bluetooth connection. It can operate in 4 modes. Person to person mode allows to chat privately with users nearby. A mesh mode allows to route traffic through devices of other users using the app. The broadcast mode allows to broadcast and see messages of all people around, even those not in the contacts. Finally, the online mode allows to send messages anywhere in the world, provided the internet connection is available.
+
+The app is built on top of Bridgefy SDK, a multi-platform SDK for building mesh networking apps. However, both SDK and the app are proprietary. The app requires the user to set up the account and verify using a phone number. The SDK requires internet connection to verify the license. Finally, it requires a permission to access the contacts list. Therefore, while the app has proven to be useful in recent Hong Kong protests \cite{forbes:hk}, it does not work fully offline and raises some privacy concerns.
+
 \subsection{FireChat}
+FireChat is a proprietary offline messaging app built by OpenGarden. It uses Bluetooth and Wi-Fi to communicate with other devices, and takes advantage of multi-hop technology. It allows to send messages and photos, private messages with end-to-end encryption, create private groups, and use hashtags to create public chat rooms. \cite{firechat}
+
+Similarly to Bridgefy, it requires internet connection for setting up an account. Unfortunately, we were not able to fully test the app at the time of writing this survey due to a bug in the sign up process.
+
 \subsection{The Serval Mesh}
-\subsection{B.A.T.M.A.N.}
+wifi ad hoc, requires root?
+
+%\subsection{B.A.T.M.A.N.}
 
 \section{Proof of Concept} \label{poc}
 \section{Conclusion} \label{conclusion}
 
 \bibliographystyle{IEEEtran}
-\bibliography{IEEEabrv,mybibfile}
+\bibliography{mybibfile}
 
 \end{document}
