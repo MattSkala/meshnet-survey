@@ -30,13 +30,16 @@ In this survey, we discuss the current implementation of various connectivity AP
 
 \section{Introduction}
 
+%// TODO: rewrite intro
+
 The increasing popularity of smartphones and novel wireless networking technologies opens up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is either overloaded or censored \cite{forbes:hk}. 
 
 Starting from Android 4.0, \textit{Wi-Fi Direct} \cite{android:wifip2p}, also referred to as Wi-Fi peer to peer, is directly supported by the system, allowing device to device Wi-Fi communication without an additional \textit{access point (AP)}. From Android 8.0, the \textit{Wi-Fi Aware} \cite{android:wifiaware} standard, also known as \textit{Neighbor Awareness Networking (NAN)}, has been supported, allowing to automatically form clusters of nearby devices.
 
 Wi-Fi generally offers a higher range of coverage and bandwidth than \textit{Bluetooth}, so it might be more suitable for data-intensive applications such as photo or video sharing. On the other hand, Bluetooth is supported on a wider variety of devices and especially \textit{Bluetooth Low Energy (BLE)} \cite{android:ble} can result in significantly lower battery consumption, thus it is more suitable for transferring small amounts of data.
 
-This survey is structured as follows. In Section \ref{wirelesstech}, we first explore features of all previously mentioned wireless communication protocols. In Section \ref{android}, we discuss their implementation and possible limitations within Android OS. In Section \ref{applications}, we explore different Android applications taking advantage of mesh networking for censorship resilient messaging. Finally, in Section \ref{poc} we present our proof of concept for deploying an ad hoc network with multi-hop routing on Android. Section \ref{conclusion} concludes this work.
+This survey is structured as follows. In Section \ref{wirelesstech}, we first analyze capabilities of various wireless communication technologies and their implementation and possible limitations within Android OS. In Section \ref{routing}, we deal with the problem of routing in mobile ad hoc networks and discuss possible solutions.
+In Section \ref{applications}, we explore different Android applications taking advantage of mesh networking for censorship resilient messaging. Finally, in Section \ref{poc} we present our proof of concept for deploying an ad hoc network with multi-hop routing on Android. Section \ref{conclusion} concludes this work.
 
 \section{Wireless Communication Technologies} \label{wirelesstech}
 
@@ -61,7 +64,7 @@ Instead, BLE devices usually communicate using the \textit{GATT}\footnote{Generi
 
 However, the advertising packet can also be abused to include the physical MAC address as part of the service UUID. Once the receiver extracts the physical MAC address from the packet, it can connect to the Bluetooth socket of the server. This has been up to date probably the most accessible way to connect two devices without user interaction. However, starting Android 8 it is no longer possible to obtain local MAC address programatically, so this solution would now require the user to copy the device MAC address from the system settings.
 
-From Android 10, there is also a possibility to form a \textit{L2CAP}\footnote{Logical link control and adaptation protocol} channel between Bluetooth LE devices.
+From Android 10, there is also a possibility to form a connection-oriented \textit{L2CAP}\footnote{Logical link control and adaptation protocol} channel between Bluetooth LE devices.
 
 \subsection{Wi-Fi Direct}
 
@@ -120,7 +123,7 @@ The library is distributed as part of Google Play Services, which means it is on
   \caption{The comparison of wireless communication technologies w.r.t. supported Android platform versions, a theoretical throughput, and range}
 \end{figure}
 
-\section{Routing Protocols}
+\section{Routing Protocols}\label{routing}
 
 %// motivation for routing in manets, issues, topology changes
 
@@ -159,14 +162,14 @@ In this section, we list the state-of-the art applications taking advantage of s
 
 \subsection{Briar}
 
+Briar \cite{briar_gplay} is an open-source project that started to support freedom of expression and right to privacy. It enables peer-to-peer encrypted messaging and forums. It is presented as a tool for activists, journalists, and anyone who needs a safe way to communicate.
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.2\textwidth]{briar1}
   \includegraphics[width=0.2\textwidth]{briar2}
   \caption{The menu and conversation detail in Briar \cite{briar_gplay}}
 \end{figure}
-
-Briar \cite{briar_gplay} is an open-source project that started to support freedom of expression and right to privacy. It enables peer-to-peer encrypted messaging and forums. It is presented as a tool for activists, journalists, and anyone who needs a safe way to communicate.
 
 Before the communication starts, users have to meet in person and scan QR codes from each other's screen. The devices exchange public keys and agree on a shared key using \textit{Bramble QR Code Protocol (BQP)} \cite{briar_bqp}. 
 %The protocol requires both devices to have Bluetooth enabled and be discoverable, or be connected to the same WiFi network. 
@@ -197,11 +200,35 @@ FireChat is a proprietary offline messaging app built by OpenGarden. It uses Blu
 Similarly to Bridgefy, it requires internet connection for setting up an account. Unfortunately, we were not able to fully test the app at the time of writing this survey due to a bug in the sign up process.
 
 \subsection{The Serval Mesh}
-wifi ad hoc, requires root?
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.2\textwidth]{serval1} \includegraphics[width=0.2\textwidth]{serval2} 
+  \caption{The dashboard and connection settings in the Serval Mesh}
+\end{figure}
+
+
+The Serval Mesh is an Android app that provides voice calls, text messaging and file sharing using mesh networking. It primarily uses Bluetooth and Wi-Fi. On supported devices, it can enable a Wi-Fi ad hoc mode when given a root access. Its primary motivation is to provide resilient communication during crisis or distaster situations. However, the latest version has been released in 2014 and it does not seem to be in active development.
+
+%\subsection{p2pkit}
+
+%\subsection{Hype SDK}
 
 %\subsection{B.A.T.M.A.N.}
 
 \section{Proof of Concept} \label{poc}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.2\textwidth]{meshnet1} \includegraphics[width=0.2\textwidth]{meshnet2} 
+  \caption{Our proof of concept MeshNet app}
+\end{figure}
+
+
+To explore various wireless communication capabilities of current smartphone devices, we have developed a simple demo application MeshNet. First, we have defined a common connectivity interface and made several implementations using all connectivity APIs currently available on Android. It is possible to choose the transport layer from Bluetooth, Bluetooth with BLE discovery, BLE GATT, BLE L2CAP, Wi-Fi Direct, Wi-Fi Aware, and Nearby Connections API.
+
+Secondly, we have implemented a rudimentary mesh network using store and forward principle based on flooding. Once the app receives a message, it first checks if it has not been received before to prevent loops. Then it stores it and forwards to all peers.
+
 \section{Conclusion} \label{conclusion}
 
 \bibliographystyle{IEEEtran}
