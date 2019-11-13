@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{cite}
 \usepackage{graphicx}
+\usepackage{multirow}
 \graphicspath{ {./images/} }
 
 \usepackage[hyphens]{url}
@@ -10,7 +11,7 @@
 
 
 \begin{document}
- 
+
 \title{A Survey on Smartphone Ad Hoc Networks}
 
 \author{\IEEEauthorblockN{Matouš Skála}
@@ -20,9 +21,9 @@ Email: M.Skala@student.tudelft.nl}}
 \maketitle
 
 \begin{abstract}
-Over the past few years, smartphones have become powerful devices that come equipped with numerous network connectivity modules. In addition to Bluetooth BR/EDR and Bluetooth Low Energy, most recent devices also come with support for Wi-Fi Direct and Wi-Fi Aware standards to facilitate the interconnection with nearby devices over longer distances and with higher bandwidth. 
+Over the past few years, smartphones have become powerful devices that come equipped with numerous network connectivity modules. In addition to Bluetooth and Bluetooth Low Energy, most recent devices also come with support for Wi-Fi Direct and Wi-Fi Aware standards to facilitate the interconnection with nearby devices over longer distances and with higher bandwidth.
 
-In this survey, we discuss the current implementation of various connectivity APIs in Android OS and explore possibilities of deploying a large-scale smartphone ad hoc network. Additionally, we design a proof of concept Android application to demonstrate the feasibility of mesh networking within the constraints imposed by Android OS.
+In this survey, we explore different nearby communication technologies  present in today's smartphones and discuss their implementation within Android OS. We explain challenges of deploying a large-scale smartphone ad hoc network and analyze available state-of-the-art applications and SDKs for nearby communication. Finally, we design a proof of concept application for Android to demonstrate the feasibility of mesh networking within the constraints imposed by the operating system.
 
 \end{abstract}
 
@@ -32,16 +33,31 @@ In this survey, we discuss the current implementation of various connectivity AP
 
 %// TODO: rewrite intro
 
-The increasing popularity of smartphones and novel wireless networking technologies opens up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is either overloaded or censored \cite{forbes:hk}. 
+There has been a desire to provide a reliable omni-present communication protocol since the beginning of the Internet. To this day, more than half the world's population is connected. However, the growth has slown down and there are still rural areas where reliable Internet connection is not available. The industry has tried to tackle reachability issues with initiatives such as Google's Project Loon\footnote{https://loon.com/} or Facebook's internet.org\footnote{https://internet.org/}. At the same time, numerous self-organized communities around the world are establishing \textit{wireless community networks}, providing an alternative to traditional Internet service providers. \cite{wcn}
 
-Starting from Android 4.0, \textit{Wi-Fi Direct} \cite{android:wifip2p}, also referred to as Wi-Fi peer to peer, is directly supported by the system, allowing device to device Wi-Fi communication without an additional \textit{access point (AP)}. From Android 8.0, the \textit{Wi-Fi Aware} \cite{android:wifiaware} standard, also known as \textit{Neighbor Awareness Networking (NAN)}, has been supported, allowing to automatically form clusters of nearby devices.
 
-Wi-Fi generally offers a higher range of coverage and bandwidth than \textit{Bluetooth}, so it might be more suitable for data-intensive applications such as photo or video sharing. On the other hand, Bluetooth is supported on a wider variety of devices and especially \textit{Bluetooth Low Energy (BLE)} \cite{android:ble} can result in significantly lower battery consumption, thus it is more suitable for transferring small amounts of data.
+On the other hand, there are countries where the communication is restricted or censored, preventing people from communicating freely. Moreover, even in places with relatively mature infrastructure, there are occasionally connectivity issues at places with high gatherings of people, such as conferences or festivals, causing congestion in the infrastructure networks.
+
+The increasing capabilities of smartphones and novel wireless networking technologies open up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is overloaded or censored. The usability of the technology has been demonstrated during protests in Hong Kong in 2018 and 2019, where protesters relied on peer-to-peer communicaion app to organize themselves. \cite{forbes:hk}
+
+% beginning of internet, decentralization
+% people without connectivity, rural areas
+% congestion - conferences, festivals
+% mesh networking - contrast in topology, no centralized entity eliminates single point of failure, self healing
+% dates back to 50s - military, academic, governmental use cases
+% today's devices
+% hybrid networks - last mile connectivity
+
+
 
 This survey is structured as follows. In Section \ref{wirelesstech}, we first analyze capabilities of various wireless communication technologies and their implementation and possible limitations within Android OS. In Section \ref{routing}, we deal with the problem of routing in mobile ad hoc networks and discuss possible solutions.
 In Section \ref{applications}, we explore different Android applications taking advantage of mesh networking for censorship resilient messaging. Finally, in Section \ref{poc} we present our proof of concept for deploying an ad hoc network with multi-hop routing on Android. Section \ref{conclusion} concludes this work.
 
 \section{Wireless Communication Technologies} \label{wirelesstech}
+
+\textit{Wi-Fi Direct} \cite{android:wifip2p}, also referred to as Wi-Fi peer to peer, is directly supported by the system, allowing device to device Wi-Fi communication without an additional \textit{access point (AP)}. From Android 8.0, the \textit{Wi-Fi Aware} \cite{android:wifiaware} standard, also known as \textit{Neighbor Awareness Networking (NAN)}, has been supported, allowing to automatically form clusters of nearby devices.
+
+Wi-Fi generally offers a higher range of coverage and bandwidth than \textit{Bluetooth}, so it might be more suitable for data-intensive applications such as photo or video sharing. On the other hand, Bluetooth is supported on a wider variety of devices and especially \textit{Bluetooth Low Energy (BLE)} \cite{android:ble} can result in significantly lower battery consumption, thus it is more suitable for transferring small amounts of data.
 
 \subsection{Bluetooth}
 Bluetooth is a wireless data exchange standard developed by Bluetooth SIG\footnote{Special Interest Group} and supported by the majority of mobile devices. To connect two devices, one device
@@ -56,9 +72,9 @@ BLE was first introduced in the Bluetooth 4.0 specification as a power-efficient
 
 Like Bluetooth, BLE operates in the 2.4 GHz ISM\footnote{industrial, scientific and medical} radio band. There are 40 physical channels, 3 of them are used for advertising and 37 are used as data channels. Devices that transmit unidirectional broadcasts on advertising channels are called \textit{advertisers}. Devices that receive data on advertising channels are called \textit{scanners}. Advertisement transmission occurs in advertising events. At the beginning of each event, the advertiser sends an advertising packet. Upon detection of the advertisement, the scanner may send a scan request which is then followed by a scan response from the advertiser. The advertisement packet can be sent in all 3 advertising channels during the same advertising event. Both advertisement and scan response size are limited by 31 bytes, but can be extended to 255 bytes by extended advertisements in Bluetooth 5.0. \cite{bluetooth51spec}
 
-If the advertising event is marked as connectable, the advertiser may receive connection requests from \textit{initiators}. 
+If the advertising event is marked as connectable, the advertiser may receive connection requests from \textit{initiators}.
 
-BLE devices can act in two roles: \textit{centrals} and \textit{peripherals}. The peripheral device starts by broadcasting an advertising packet limited to the size of 31 bytes. Central devices can then run a scanning process and filter advertising packets based on the MAC address, service UUID, or other parameters. It is important to note that the MAC received in advertising packets is not the physical MAC address if the devices are not paired, so it cannot be used to create the Bluetooth socket. \cite{ble:privacy} 
+BLE devices can act in two roles: \textit{centrals} and \textit{peripherals}. The peripheral device starts by broadcasting an advertising packet limited to the size of 31 bytes. Central devices can then run a scanning process and filter advertising packets based on the MAC address, service UUID, or other parameters. It is important to note that the MAC received in advertising packets is not the physical MAC address if the devices are not paired, so it cannot be used to create the Bluetooth socket. \cite{ble:privacy}
 
 Instead, BLE devices usually communicate using the \textit{GATT}\footnote{Generic Attribute Profile} server. Both central and peripheral can act as a server or client. The GATT server allows to store short pieces of data known as \textit{attributes} in form of \textit{characteristics} and \textit{descriptors}. Once the client establishes the connection with the server, it can read or write supported attributes.
 
@@ -75,8 +91,8 @@ There have been many attempts to enable direct communication between IEEE 802.11
 \subsubsection{Multi-group communication}
 
 The standard only defines intra-group communication, but it does not restrict a Group Member from participating in multiple groups simultaneously. Moreover, a device can theoretically connect both to Wi-Fi Direct and an infrastructure network by using multiple virtual MAC entities. However, these functionalities are not defined by the standard and thus depend on the implementation.
-%\subsubsection{Limitations of Android} 
-In Android, the GO always has the same hardcoded IP address (192.168.49.1), while GM are assigned a random address from the same subnet (192.168.49.2-254). As a result, the scenario where the device would act in multiple groups at the same time cannot be directly implemented. 
+%\subsubsection{Limitations of Android}
+In Android, the GO always has the same hardcoded IP address (192.168.49.1), while GM are assigned a random address from the same subnet (192.168.49.2-254). As a result, the scenario where the device would act in multiple groups at the same time cannot be directly implemented.
 
 There are several workarounds proposed in \cite{FunaiTH16}. The first solution is to use \textit{time sharing} to allow a device to act as a gateway between multiple groups. It requires a device to periodically disconnect and reconnect to different groups and effectively act as a relay passing messages between multiple groups.
 Another solution takes advantage of \textit{simultaneous connections} using Wi-Fi Direct and the traditional Wi-Fi. The GO advertises its group using a unique Service Set ID (SSID) that can be used by other clients not supporting the framework to join the group. Experiments have shown that it is possible to create a LC/GM gateway node when communicating using multicast UDP datagram sockets. Due to routing-related issues, this solution does not work with traditional datagram or stream sockets. The authors also propose a more efficient \textit{hybrid} protocol that uses multicast sockets as a control channel that triggers gateway configuration change if needed. However, all solutions rely on undocumented behaviors, which means their reliability can vary across devices or Android OS versions.
@@ -96,34 +112,28 @@ Wi-Fi Aware is supported by Android OS since the version 8.0. However, it is not
 
 To our best knowledge, there have been no attempts to utilize Wi-Fi Aware as a communication layer for mesh networks so far. It has a higher throughput and range then Bluetooth. It also should not suffer from the issues related to Wi-Fi Direct described previously. However, reluctant support from device manufacturers prevents it from being useful for a wide-scale deployment in the near future.
 
-\subsection{Nearby Connections API}
 
-All previously mentioned technologies can be accessed on Android directly using their corresponding APIs. However, in some cases, the behavior depends on the version of Android OS or even device-specific implementation. Moreover, every API is slightly different, and taking advantage of multiple technologies simultaneously takes considerable effort. For that reason, Google introduced Nearby Connections API in 2015 and its fully-offline version 2.0 in 2018. \cite{nearby2} The API aims to large extent simplify development of Android applications relying on peer to peer communication. It is able to automatically switch between Bluetooth, BLE, Wi-Fi, Wi-Fi Direct, and Wi-Fi Aware depending on the application needs and device capabilities.
-
-It supports multiple strategies for different network topologies, specifically cluster, star, and point to point. The cluster topology is the most general one allowing m-to-n connections. However, in the current version, the cluster stratgy results in lower bandwidth connections as it uses only Bluetooth connectivity.
-
-The library is closed-sourced, but it has been previously reverse-engineered and analyzed by security researchers. Several vulnerabilities have been discovered and disclosed to Google, including impersonation, man-in-the-middle attacks, attacker-induced physical layer switch, DoS, or radio state manipulation. \cite{nearbytr}
-
-The library is distributed as part of Google Play Services, which means it is only available on devices that are certified by Google. This also prevents it from being used in countries where access to Google is restricted. This is not compatible with our idea of censorship resilient communication.
-
-\begin{figure}  
+\begin{figure}
   \centering
   \begin{tabular}{ | l | l | l | l | l | }
     \hline
     Technology & Android & Throughput & Range \\
     \hline
-    Bluetooth & 2.0+ & 24 Mbps & $\sim$10 m \\
-    BLE & 4.3+ & 0.3 Mbps & $\sim$100 m \\
-    BLE GATT & 5.0+ & 0.3 Mbps & $\sim$100 m \\
-    BLE L2CAP & 10.0+ & 0.3 Mbps & $\sim$100 m \\
-    WiFi Direct & 4.0+ & 250 Mbps & $\sim$200 m \\
-    WiFi Aware & 8.0+ & 250 Mbps & $\sim$200 m \\
+    Bluetooth & 2.0+ & 2 Mbps & $\sim$40 m \\
+    \hline
+    BLE Advertising & 4.3+ & \multirow{3}{*}{0.3 Mbps} & \multirow{3}{*}{$\sim$100 m} \\
+    BLE GATT & 5.0+ &  &  \\
+    BLE L2CAP & 10.0+ &  &  \\
+    \hline
+    WiFi Direct & 4.0+ & \multirow{2}{*}{250 Mbps} & \multirow{2}{*}{$\sim$200 m} \\
+    WiFi Aware & 8.0+ & & \\
     \hline
   \end{tabular}
   \caption{The comparison of wireless communication technologies w.r.t. supported Android platform versions, a theoretical throughput, and range}
 \end{figure}
 
 \section{Routing Protocols}\label{routing}
+
 
 %// motivation for routing in manets, issues, topology changes
 
@@ -139,7 +149,7 @@ In proactive routing protocols, each node maintains routes to every other node i
 
 \subsection{Reactive}
 
-In reactive routing, routes are established on demand. When a node needs to send a message to the destination and the route is not known, the \textit{route discovery} mechanism is invoked. This is usually done by broadcasting a route discovery packet through the network. Once the path between the source and the destination is known, data can be transmitted using the selected route. Due to dynamic nature of SPANs, a \textit{route maintenance} mechanism is required to handle route breakage. 
+In reactive routing, routes are established on demand. When a node needs to send a message to the destination and the route is not known, the \textit{route discovery} mechanism is invoked. This is usually done by broadcasting a route discovery packet through the network. Once the path between the source and the destination is known, data can be transmitted using the selected route. Due to dynamic nature of SPANs, a \textit{route maintenance} mechanism is required to handle route breakage.
 Some well-known reactive routing protocols are Ad Hoc On-Demand Distance Vector (AODV) \cite{aodv} or Dynamic Source Routing (DSR) \cite{dsr}.
 
 %Compared to proactive approach, this is more efficient in larger networks, as the whole topology does not have to be synchronized. However, it incurrs a time delay before the first message to the destionation can be sent.
@@ -156,9 +166,11 @@ Some well-known reactive routing protocols are Ad Hoc On-Demand Distance Vector 
 %\subsection{Nearby Connections API}
 
 
-\section{Applications} \label{applications}
+\section{Mesh Networking Applications \& SDKs} \label{applications}
 
 In this section, we list the state-of-the art applications taking advantage of smartphone ad hoc networks for resilient messaging. We describe their functionality and analyze chosen communication technologies. Finally, we assess their limitations and suggest improvements.
+
+% problems: difficult to test (Testing Nearby Peer-to-Peer Mobile Apps at Large)
 
 \subsection{Briar}
 
@@ -171,8 +183,8 @@ Briar \cite{briar_gplay} is an open-source project that started to support freed
   \caption{The menu and conversation detail in Briar \cite{briar_gplay}}
 \end{figure}
 
-Before the communication starts, users have to meet in person and scan QR codes from each other's screen. The devices exchange public keys and agree on a shared key using \textit{Bramble QR Code Protocol (BQP)} \cite{briar_bqp}. 
-%The protocol requires both devices to have Bluetooth enabled and be discoverable, or be connected to the same WiFi network. 
+Before the communication starts, users have to meet in person and scan QR codes from each other's screen. The devices exchange public keys and agree on a shared key using \textit{Bramble QR Code Protocol (BQP)} \cite{briar_bqp}.
+%The protocol requires both devices to have Bluetooth enabled and be discoverable, or be connected to the same WiFi network.
 This provides strong identities secure against man-in-the-middle attacks.
 
 The device only accepts connections from devices in contacts. However, the user can initiate an introduction between two of her contacts. If both contacts accept the introduction request, then they are able to establish connections without meeting in person.
@@ -203,24 +215,44 @@ Similarly to Bridgefy, it requires internet connection for setting up an account
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.2\textwidth]{serval1} \includegraphics[width=0.2\textwidth]{serval2} 
+  \includegraphics[width=0.2\textwidth]{serval1} \includegraphics[width=0.2\textwidth]{serval2}
   \caption{The dashboard and connection settings in the Serval Mesh}
 \end{figure}
 
 
 The Serval Mesh is an Android app that provides voice calls, text messaging and file sharing using mesh networking. It primarily uses Bluetooth and Wi-Fi. On supported devices, it can enable a Wi-Fi ad hoc mode when given a root access. Its primary motivation is to provide resilient communication during crisis or distaster situations. However, the latest version has been released in 2014 and it does not seem to be in active development.
 
+\subsection{Hype SDK}
+The Hype SDK \cite{hype} is a cross-platform mesh networking library. It is based on the \textit{multi-transport} concept, where multiple communication technologies can be used simulateneously. Currently, Hype supports Wi-Fi Infrastructure, Wi-Fi Direct, Bluetooth Classic, and Bluetooth Low Energy. The developer is given choice which transports to enable based on the badwidth or power efficiency requirements of the application.
+
+When a new node is found, a \textit{found notification} is triggered. The notification includes a device id and an optional user id. If the app decides to establish a connection with the discovered node, it requests a handshake. This process is also referred to as \textit{resolving an instance}. During the handshake, devices exchange public encryption keys, announcements, and other connection configurations.
+
+The Hype SDK also enables remote connectivity by integrating the concept of \textit{Internet reachability}. A Hype-enabled device can connect with other peers over the Internet, using NAT traversal techniques or a central server operated by Hype Labs.
+
+All communication is end-to-end encrypted to ensure confidentiality and integrity of transferred messages. To provide authenticity, each device is issued a certificate by a central server before joining the network. For that reason, the device needs to be connected to the Internet when joining the network for the first time, or when the certificate expires.
+
+The Hype SDK is offered as a paid service with billing based on the number of monthly active devices.
+
+In mesh networks, nodes are required to cooperate by forwarding content on behalf of each other. With Internet reachability enabled, this also means sending packets over the Internet, which can be a scarce resource. HypeLabs is currently working on the implementation of \textit{Hype Open Protocol} (HOP), which aims to incentivize nodes to remain active in the network. HOP will likely take advantage of a utility token based on the \textit{Stellar Consensus Protocol}. Consequently, a fee can be charged by nodes for routing traffic or providing Internet connectivity. It is still in an early development stage with a public release planned for 2021. \cite{hop}
+
 %\subsection{p2pkit}
 
-%\subsection{Hype SDK}
+\subsection{Nearby Connections API}
 
-%\subsection{B.A.T.M.A.N.}
+All previously mentioned technologies can be accessed on Android directly using their corresponding APIs. However, in some cases, the behavior depends on the version of Android OS or even device-specific implementation. Moreover, every API is slightly different, and taking advantage of multiple technologies simultaneously takes considerable effort. For that reason, Google introduced Nearby Connections API in 2015 and its fully-offline version 2.0 in 2018. \cite{nearby2} The API aims to large extent simplify development of Android applications relying on peer to peer communication. It is able to automatically switch between Bluetooth, BLE, Wi-Fi, Wi-Fi Direct, and Wi-Fi Aware depending on the application needs and device capabilities.
 
-\section{Proof of Concept} \label{poc}
+It supports multiple strategies for different network topologies, specifically cluster, star, and point to point. The cluster topology is the most general one allowing m-to-n connections. However, in the current version, the cluster stratgy results in lower bandwidth connections as it uses only Bluetooth connectivity.
+
+The library is closed-sourced, but it has been previously reverse-engineered and analyzed by security researchers. Several vulnerabilities have been discovered and disclosed to Google, including impersonation, man-in-the-middle attacks, attacker-induced physical layer switch, DoS, or radio state manipulation. \cite{nearbytr}
+
+The library is distributed as part of Google Play Services, which means it is only available on devices that are certified by Google. This also prevents it from being used in countries where access to Google is restricted. This is not compatible with our idea of censorship resilient communication.
+
+
+\section{Our Proof of Concept} \label{poc}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.2\textwidth]{meshnet1} \includegraphics[width=0.2\textwidth]{meshnet2} 
+  \includegraphics[width=0.2\textwidth]{meshnet1} \includegraphics[width=0.2\textwidth]{meshnet2}
   \caption{Our proof of concept MeshNet app}
 \end{figure}
 
@@ -229,7 +261,16 @@ To explore various wireless communication capabilities of current smartphone dev
 
 Secondly, we have implemented a rudimentary mesh network using store and forward principle based on flooding. Once the app receives a message, it first checks if it has not been received before to prevent loops. Then it stores it and forwards to all peers.
 
+% simple, but more complicated comunication protocols feasible
+
 \section{Conclusion} \label{conclusion}
+
+% required internet connection/not working with the latest android/not providing mesh networking
+
+In this survey, we have first introduced several wireless communication technologies. Then, we have analyzed state-of-the-art SDKs and applications taking advantage of those technologies to provide offline communication. We have seen that up to date, there is no censorship-resilient communication app that would be able to work without any infrastructure, be secure, and compatible with the majority of recent devices. Most of the apps available today still require internet connection at least for initial setup, or are susceptible to man-in-the-middle attacks.
+In the end, we have shown that it is feasible with technologies available today to build a fully offline mesh networking solution using several wireless technologies.
+
+As future work, we envision a universal multi-transport communication protocol that would be able to take advantage of communication technologies available to a given device. The protocol should allow to build hybrid network by routing traffic between devices in a mesh network and the Internet. The protocol should have NAT puncturing built-in to be able to facilitate direct connections between devices over the Internet without need for any central server. Finally, there should be a way to incentivize routing of traffic in the network to prevent DoS attacks. To our best knowledge, this has not yet been achieved and still poses some open research questions.
 
 \bibliographystyle{IEEEtran}
 \bibliography{mybibfile}
