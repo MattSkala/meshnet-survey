@@ -39,7 +39,7 @@ There has been a desire to provide a reliable omni-present communication protoco
 
 On the other hand, there are countries where the communication is restricted or censored, preventing people from communicating freely. Moreover, even in places with relatively mature infrastructure, there are occasionally connectivity issues at places with high gatherings of people, such as conferences or festivals, causing congestion in the infrastructure networks.
 
-The increasing capabilities of smartphones and novel wireless networking technologies open up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is overloaded or censored. The practical usability of the mesh networking technology has been demonstrated during protests in Hong Kong in 2018 and 2019, where protesters relied on peer-to-peer communicaion app to organize themselves. \cite{forbes:hk}
+The increasing capabilities of smartphones and novel wireless networking technologies open up possibilities to a whole new range of applications that can communicate without the need for the Internet connection. Prospective use cases are ranging from proximity-based social networks, infrastructure-less communication with \textit{Internet of Things (IoT)} devices, student attendance tracking, to communication between attendees during music festivals or protests, where the cellular network is overloaded or censored. The practical usability of the mesh networking technology has been demonstrated during the Hong Kong protests in 2018 and 2019, where protesters relied on peer-to-peer communicaion apps as a communication tactic. \cite{forbes:hk}
 
 % beginning of internet, decentralization
 % people without connectivity, rural areas
@@ -216,14 +216,14 @@ In Table \ref{apps_table}, we can see the list of all compared applications and 
 
 \subsection{Briar}
 
-Briar \cite{briar_gplay} is an open-source project that started to support freedom of expression and right to privacy. It enables peer-to-peer encrypted messaging and forums. It is presented as a tool for activists, journalists, and anyone who needs a safe way to communicate.
-
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.2\textwidth]{briar1}
   \includegraphics[width=0.2\textwidth]{briar2}
   \caption{The menu and conversation detail in Briar \cite{briar_gplay}}
 \end{figure}
+
+Briar \cite{briar_gplay} is an open-source project that started to support freedom of expression and right to privacy. It enables peer-to-peer encrypted messaging and forums. It is presented as a tool for activists, journalists, and anyone who needs a safe way to communicate.
 
 Before the communication starts, users have to meet in person and scan QR codes from each other's screen. The devices exchange public keys and agree on a shared key using \textit{Bramble QR Code Protocol (BQP)} \cite{briar_bqp}.
 %The protocol requires both devices to have Bluetooth enabled and be discoverable, or be connected to the same WiFi network.
@@ -246,11 +246,11 @@ However, the application does not take advantage of mesh networking. It can only
 
 Bridgefy is an offline messaging app based on Bluetooth connection. It can operate in 4 modes. Person to person mode allows to chat privately with users nearby. A mesh mode allows to route traffic through devices of other users using the app. The broadcast mode allows to broadcast and see messages of all people around, even those not in the contacts. Finally, the online mode allows to send messages anywhere in the world, provided the internet connection is available.
 
-The app is built on top of Bridgefy SDK, a multi-platform SDK for building mesh networking apps. However, both SDK and the app are proprietary. The app requires the user to set up the account and verify using a phone number. The SDK requires internet connection to verify the license. Finally, it requires a permission to access the contacts list. Therefore, while the app has proven to be useful in recent Hong Kong protests \cite{forbes:hk}, it does not work fully offline and raises some privacy concerns.
+The app is built on top of Bridgefy SDK, a multi-platform SDK for building mesh networking apps. Both SDK and the app are proprietary. The SDK allows to send a point-to-point message to a specific device addressed by its ID, or to broadcast a message to all devices present in the mesh network. Several
+
+The app requires the user to set up an account and perform a phone number verification. The SDK requires internet connection to verify the license. Finally, it requires a permission to access the contacts list. Therefore, while the app has gained popularity during the 2019 Hong Kong protests \cite{forbes:hk}, it does not work fully offline and raises some privacy concerns.
 
 \subsection{FireChat}
-
-FireChat is a proprietary offline messaging app built by OpenGarden. It uses Bluetooth and Wi-Fi to communicate with other devices, and takes advantage of multi-hop technology. It allows to send messages and photos, private messages with end-to-end encryption, create private groups, and use hashtags to create public chat rooms. \cite{firechat}
 
 \begin{figure}[h]
   \centering
@@ -259,17 +259,27 @@ FireChat is a proprietary offline messaging app built by OpenGarden. It uses Blu
   \caption{The list of rooms and a conversation detail in FireChat \cite{firechat}}
 \end{figure}
 
+FireChat \cite{firechat} is a proprietary offline messaging app built by OpenGarden. It uses Bluetooth and Wi-Fi to communicate with other devices, and takes advantage of multi-hop technology. It allows to send messages and photos, private messages with end-to-end encryption, create private groups, and use hashtags to create public chat rooms.
+
 Similarly to Bridgefy, it requires internet connection for setting up an account. Unfortunately, we were not able to fully test the app at the time of writing this survey due to a bug in the sign up process.
 
 \subsection{The Serval Mesh}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=0.2\textwidth]{serval1} \includegraphics[width=0.2\textwidth]{serval2}
   \caption{The dashboard and connection settings in the Serval Mesh}
 \end{figure}
 
-The Serval Mesh \cite{serval} is an Android app that provides voice calls, text messaging and file sharing using mesh networking. It primarily uses Bluetooth and Wi-Fi. On supported devices, it can enable a Wi-Fi ad hoc mode when given a root access. Its primary motivation is to provide resilient communication during crisis or distaster situations. However, the latest version has been released in 2014 and it does not seem to be in active development. It is also incompatible with recent versions of Android.
+The Serval Mesh \cite{serval} is an Android app that enables people to make voice calls, send text messages and even share files using without requiring any inftrustructure. networking. Its primary motivation is to provide resilient communication during crisis or disaster situations. It primarily uses Bluetooth and Wi-Fi. On supported devices, it can enable a Wi-Fi ad hoc mode when given a root access.
+
+The Android application codenamed Batphone is based on \textit{Serval Distributed Numering Architecture} (DNA) \cite{servaldna}, the core daemon implementing services in the mesh network. Each device in the network is identified by its phone number, which the user can claim. To call a number, the app broadcasts \texttt{DNA LOOKUP} request to nearby devices. The \textit{Mesh Datagram Protocol} (MDP) is a broadcast mechanism that propagates the request to all devices recursively, while respecting TTL. Any device receving a the request sends \texttt{DNA REPLY} response. The originating device collects all responses and shows the list to the user. As any user can claim any phone number, this mechanism is vulnerable to impersonation if the user claims a number they do not own.
+
+Voice calls are implemented by \textit{Voice over Mesh Protocol} (VoMP), a custom two-way audio streaming protocol. It has been designed to work in unstable conditions of wireless mesh networks by allowing mid-call re-routing and re-connection.
+
+\textit{Rhizome} is a content distribution service with a content-exchange protocol based of MDP. Each piece of content is called a \textit{bundle}. The bundle consists of a \textit{manifest} describing its content, and a \textit{payload}. \textit{MeshMS} is then a service implemented on top of Rhizome that allows sending short text messages.
+
+The latest version has been released in 2016 and it does not seem to be in active development. It is also incompatible with recent versions of Android and requires root for mesh functionality.
 
 \subsection{Hype SDK}
 The Hype SDK \cite{hype} is a cross-platform mesh networking library. It is based on the \textit{multi-transport} concept, where multiple communication technologies can be used simulateneously. Currently, Hype supports Wi-Fi Infrastructure, Wi-Fi Direct, Bluetooth Classic, and Bluetooth Low Energy. The developer is given choice which transports to enable based on the badwidth or power efficiency requirements of the application.
@@ -306,11 +316,11 @@ The library is distributed as part of Google Play Services, which means it is on
 \end{figure}
 
 
-To explore various wireless communication capabilities of current smartphone devices, we have developed a simple demo application MeshNet. First, we have defined a common connectivity interface and made several implementations using all connectivity APIs currently available on Android. It is possible to choose the transport layer from Bluetooth, Bluetooth with BLE discovery, BLE GATT, BLE L2CAP, Wi-Fi Direct, Wi-Fi Aware, and Nearby Connections API.
+To explore various wireless communication capabilities of current smartphone devices, we have developed a simple demo application MeshNet. First, we have defined a common connectivity interface, and then made several implementations using all connectivity APIs currently available on Android. It is possible to choose the transport layer from Bluetooth, Bluetooth with BLE discovery, BLE GATT, BLE L2CAP, Wi-Fi Direct, Wi-Fi Aware, and Nearby Connections API.
 
-Secondly, we have implemented a rudimentary mesh network using store and forward principle based on flooding. Once the app receives a message, it first checks if it has not been received before to prevent loops. Then it stores it and forwards to all peers.
+Secondly, we have implemented a rudimentary mesh network using store and forward principle based on flooding. Once the app receives a message, it first checks if it has not been received before to prevent loops. Then it stores it and forwards it to all other peers.
 
-The source code of the resulting application is publicly available\footnote{https://github.com/MattSkala/meshnet-android}. Aside from being a prototype, it can also serve as a reference for implementing connectivity APIs on Android, as we noticed that the official documentation is often incomplete and occasionally contains mistakes.
+The source code of the resulting application is publicly available\footnote{https://github.com/MattSkala/meshnet-android}. Aside from being a functional prototype, it can also serve as a reference for implementing connectivity APIs on Android, as we noticed that the official documentation is often incomplete and occasionally contains mistakes.
 
 % simple, but more complicated comunication protocols feasible
 
